@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[8],{KNYz:function(e,t,r){"use strict";r.r(t);var a=r("q1tI"),n=r.n(a),l=r("Wbzz"),u=r("Bl7J"),c=r("vrFN");t.default=function(){var e=Object(l.useStaticQuery)("3073118102");return n.a.createElement(u.a,null,n.a.createElement(c.a,{title:"Project Page"}),n.a.createElement("h1",null,"Projects:"),n.a.createElement("p",null,e.github.user.repository.url))}}}]);
+//# sourceMappingURL=component---src-pages-project-js-8c786765f95bc5b3d131.js.map
