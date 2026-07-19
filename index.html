@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Rohit Das — interactive pixel-art portfolio. Walk around, explore projects, music, and career planets."
+    />
+    <meta name="theme-color" content="#0b1020" />
+    <title>Rohit Das — Explore</title>
+    <script type="module" crossorigin src="/assets/index-CVGB6phw.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CLgirxXu.css">
+  </head>
+  <body>
+    <div id="app">
+      <div id="game-container"></div>
+      <div id="hud">
+        <div id="zone-label">—</div>
+        <div id="hud-right">
+          <div id="coin-hud" title="Explore spots for 5s to earn coins">
+            <img id="coin-icon" src="/assets/ui_coin.png" alt="" width="22" height="22" />
+            <span id="coin-count">0 / 0</span>
+          </div>
+          <button id="help-btn" type="button" aria-label="Help">?</button>
+        </div>
+      </div>
+      <div id="dwell-ring" class="hidden" aria-hidden="true">
+        <svg viewBox="0 0 44 44" width="44" height="44">
+          <circle class="dwell-ring-bg" cx="22" cy="22" r="18" />
+          <circle class="dwell-ring-fill" cx="22" cy="22" r="18" />
+        </svg>
+      </div>
+      <div id="coin-toast" class="hidden" aria-live="polite"></div>
+      <div id="prompt" class="hidden"></div>
+      <aside id="aside-card" class="hidden" aria-live="polite">
+        <div id="aside-media"></div>
+        <h3 id="aside-title"></h3>
+        <p id="aside-meta" class="meta"></p>
+        <p id="aside-body"></p>
+        <div id="aside-links"></div>
+      </aside>
+      <div id="panel" class="hidden" role="dialog" aria-modal="true">
+        <div id="panel-inner">
+          <button id="panel-close" type="button" aria-label="Close">×</button>
+          <h2 id="panel-title"></h2>
+          <p id="panel-meta" class="meta"></p>
+          <div id="panel-body"></div>
+          <div id="panel-links"></div>
+        </div>
+      </div>
+      <div id="help-overlay" class="hidden">
+        <div class="help-card">
+          <h2>How to explore</h2>
+          <ul>
+            <li><strong>Move</strong> — Arrow keys / WASD, or on-screen pad</li>
+            <li><strong>Explore</strong> — Walk close to things; info opens automatically</li>
+            <li><strong>Career</strong> — Board the ship, fly up past job planets</li>
+            <li><strong>Home</strong> — Esc (from a room or the ship) returns to the hub</li>
+            <li><strong>Coins</strong> — Stand on a spot for 5s (watch the ring). Collect all for sunglasses!</li>
+          </ul>
+          <p class="hint">Visit Projects, Music, Story, and the Launch Pad.</p>
+          <button id="help-close" type="button">Got it</button>
+        </div>
+      </div>
+      <div id="mobile-controls" class="hidden" aria-hidden="true">
+        <div id="dpad">
+          <button data-dir="up" type="button">▲</button>
+          <div class="mid">
+            <button data-dir="left" type="button">◀</button>
+            <button data-dir="down" type="button">▼</button>
+            <button data-dir="right" type="button">▶</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
