@@ -311,13 +311,14 @@ body {
 }
 
 @media (max-width: 700px) {
+  /* Mobile: pin modal to top so it doesn't cover the character / D-pad */
   #aside-card {
-    top: auto;
-    bottom: 170px;
+    top: 56px;
+    bottom: auto;
     right: 10px;
     left: 10px;
     width: auto;
-    max-height: 28vh;
+    max-height: min(36vh, 320px);
   }
 }
 
