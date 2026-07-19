@@ -21,9 +21,16 @@ const input: InputState = {
 let panelOpen = false;
 let helpOpen = false;
 let nearestPrompt = "";
+/** Called on Escape when no panel/help is open (e.g. return to hub). */
+let escapeToHome: (() => void) | null = null;
 
 export function isUiBlocking(): boolean {
   return panelOpen || helpOpen;
+}
+
+/** Register scene-level Escape behavior (return home). Pass null to clear. */
+export function setEscapeToHome(handler: (() => void) | null): void {
+  escapeToHome = handler;
 }
 
 export function getInput(): InputState {
@@ -36,6 +43,16 @@ export function consumeInteractPress(): boolean {
     return true;
   }
   return false;
+}
+
+/** Clear stuck movement keys (e.g. after scene change). */
+export function clearMovementInput(): void {
+  input.up = false;
+  input.down = false;
+  input.left = false;
+  input.right = false;
+  input.interact = false;
+  input.interactPressed = false;
 }
 
 export function setZoneLabel(text: string): void {
@@ -54,6 +71,121 @@ export function setPrompt(text: string | null): void {
   nearestPrompt = text;
   el.textContent = text;
   el.classList.remove("hidden");
+}
+
+/** Non-blocking side card (ascent planets) — does not freeze movement. */
+export function showAside(payload: PanelPayload | null): void {
+  const card = document.getElementById("aside-card");
+  if (!card) return;
+  if (!payload) {
+    const mediaEl = document.getElementById("aside-media");
+    if (mediaEl) {
+      mediaEl.innerHTML = "";
+      mediaEl.classList.remove("has-video");
+    }
+    card.classList.add("hidden");
+    return;
+  }
+  const title = document.getElementById("aside-title");
+  const meta = document.getElementById("aside-meta");
+  const body = document.getElementById("aside-body");
+  const media = document.getElementById("aside-media");
+  const links = document.getElementById("aside-links");
+  if (title) title.textContent = payload.title;
+  if (meta) {
+    meta.textContent = payload.meta ?? "";
+    meta.style.display = payload.meta ? "block" : "none";
+  }
+  if (body) {
+    body.textContent = payload.body;
+    // tags under body
+    const oldTags = card.querySelector(".aside-tags");
+    oldTags?.remove();
+    if (payload.tags?.length) {
+      const tags = document.createElement("div");
+      tags.className = "tags aside-tags";
+      for (const t of payload.tags) {
+        const span = document.createElement("span");
+        span.className = "tag";
+        span.textContent = t;
+        tags.appendChild(span);
+      }
+      body.insertAdjacentElement("afterend", tags);
+    }
+  }
+  if (media) {
+    media.innerHTML = "";
+    const embeds: { id: string; start?: number; label?: string }[] = [];
+    if (payload.youtubeId) {
+      embeds.push({
+        id: payload.youtubeId,
+        start: payload.youtubeStart,
+      });
+    }
+    for (const extra of payload.youtubeExtra ?? []) {
+      embeds.push(extra);
+    }
+    if (embeds.length) {
+      media.classList.add("has-video");
+      embeds.forEach((emb, i) => {
+        if (emb.label) {
+          const lab = document.createElement("div");
+          lab.className = "aside-video-label";
+          lab.textContent = emb.label;
+          media.appendChild(lab);
+        }
+        const wrap = document.createElement("div");
+        wrap.className = "aside-video";
+        const iframe = document.createElement("iframe");
+        const start = emb.start != null ? `&start=${emb.start}` : "";
+        // First embed autoplays with sound (user already interacted by walking).
+        // Extra embeds stay paused so we don't stack audio.
+        const autoplay = i === 0 ? 1 : 0;
+        iframe.src =
+          `https://www.youtube-nocookie.com/embed/${emb.id}` +
+          `?autoplay=${autoplay}&rel=0&playsinline=1&modestbranding=1&enablejsapi=1${start}`;
+        iframe.title = emb.label ?? payload.title;
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allowFullscreen = true;
+        // Don't lazy-load — that delays / blocks autoplay
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
+        wrap.appendChild(iframe);
+        media.appendChild(wrap);
+      });
+    } else {
+      media.classList.remove("has-video");
+      if (payload.imageSrc) {
+        const img = document.createElement("img");
+        img.src = payload.imageSrc;
+        img.alt = "";
+        img.className = "aside-img";
+        media.appendChild(img);
+      }
+    }
+  }
+  if (links) {
+    links.innerHTML = "";
+    for (const link of payload.links ?? []) {
+      const a = document.createElement("a");
+      a.href = link.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = link.label;
+      links.appendChild(a);
+    }
+  }
+  card.classList.remove("hidden");
+}
+
+export function hideAside(): void {
+  const media = document.getElementById("aside-media");
+  if (media) {
+    // tear down iframes so YouTube audio stops
+    media.innerHTML = "";
+    media.classList.remove("has-video");
+  }
+  showAside(null);
 }
 
 export function openPanel(payload: PanelPayload): void {
@@ -142,6 +274,7 @@ function bindKey(code: string, on: boolean): void {
       if (on) {
         if (panelOpen) closePanel();
         else if (helpOpen) closeHelp();
+        else if (escapeToHome) escapeToHome();
       }
       break;
     case "KeyH":
@@ -162,6 +295,7 @@ export function initDomUi(): void {
     bindKey(e.code, true);
   });
   window.addEventListener("keyup", (e) => bindKey(e.code, false));
+  window.addEventListener("blur", () => clearMovementInput());
 
   document.getElementById("panel-close")?.addEventListener("click", () => closePanel());
   document.getElementById("panel")?.addEventListener("click", (e) => {
@@ -205,21 +339,6 @@ export function initDomUi(): void {
     btn.addEventListener("pointercancel", end);
   });
 
-  const a = document.getElementById("btn-a");
-  a?.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    input.interact = true;
-    input.interactPressed = true;
-  });
-  a?.addEventListener("pointerup", (e) => {
-    e.preventDefault();
-    input.interact = false;
-  });
-  a?.addEventListener("pointercancel", () => {
-    input.interact = false;
-  });
-
-  // Show mobile controls after first touch as fallback
   window.addEventListener(
     "touchstart",
     () => {

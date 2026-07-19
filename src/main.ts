@@ -5,8 +5,10 @@ import { HubScene } from "./game/scenes/HubScene";
 import { RoomScene } from "./game/scenes/RoomScene";
 import { AscentScene } from "./game/scenes/AscentScene";
 import { initDomUi } from "./game/ui/dom";
+import { refreshCoinHud } from "./game/coins";
 
 initDomUi();
+refreshCoinHud();
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -15,8 +17,9 @@ const config: Phaser.Types.Core.GameConfig = {
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 960,
-    height: 640,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    min: { width: 320, height: 480 },
   },
   physics: {
     default: "arcade",
@@ -32,6 +35,7 @@ const config: Phaser.Types.Core.GameConfig = {
   render: {
     pixelArt: true,
     antialias: false,
+    roundPixels: true,
   },
 };
 

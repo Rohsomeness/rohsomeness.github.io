@@ -1,54 +1,87 @@
 import Phaser from "phaser";
 import { PlayerController } from "../PlayerController";
-import { paintHub, type DoorDef, type HotspotDef } from "../mapGen";
+import { paintHub, type DoorDef } from "../mapGen";
 import {
-  consumeInteractPress,
+  clearMovementInput,
+  hideAside,
   isUiBlocking,
+  setEscapeToHome,
   setPrompt,
   setZoneLabel,
 } from "../ui/dom";
-
-const W = 960;
-const H = 640;
+import { hasShades, refreshCoinHud, resetDwell, setDwellRing } from "../coins";
 
 export class HubScene extends Phaser.Scene {
   private player!: PlayerController;
   private doors: DoorDef[] = [];
-  private hotspots: HotspotDef[] = [];
-  private near: { type: "door" | "hot"; id: string; label: string } | null = null;
+  private pad = { x: 0, y: 0, r: 48 };
+  private transitioning = false;
+  private boardGraceUntil = 0;
+  private W = 960;
+  private H = 640;
 
   constructor() {
     super("Hub");
   }
 
   create(): void {
+    clearMovementInput();
+    hideAside();
+    setEscapeToHome(null); // already home
     setZoneLabel("Hub · Launch Campus");
-    this.physics.world.setBounds(0, 0, W, H);
-    this.cameras.main.setBounds(0, 0, W, H);
+    this.transitioning = false;
+
+    this.W = this.scale.width;
+    this.H = this.scale.height;
+
+    this.physics.world.setBounds(0, 0, this.W, this.H);
+    this.cameras.main.setBounds(0, 0, this.W, this.H);
     this.cameras.main.setBackgroundColor("#070b16");
+    this.cameras.main.fadeIn(200);
 
-    const map = paintHub(this, W, H);
+    const map = paintHub(this, this.W, this.H);
     this.doors = map.doors;
-    this.hotspots = map.hotspots;
+    this.pad = map.pad;
 
-    const spawn = (this.registry.get("hubSpawn") as { x: number; y: number } | undefined) ?? map.spawn;
+    let spawn = map.spawn;
+    const from = this.registry.get("returnFrom") as string | undefined;
+    if (from === "ascent") {
+      spawn = { x: this.pad.x, y: this.pad.y + this.pad.r + 55 };
+      this.boardGraceUntil = this.time.now + 1200;
+    } else if (from) {
+      const door = this.doors.find((d) => d.target === from);
+      if (door) spawn = { ...door.returnSpawn };
+    }
+    this.registry.remove("returnFrom");
+
     this.player = new PlayerController(this, spawn.x, spawn.y);
+    if (hasShades()) this.player.setShades(true);
     this.physics.add.collider(this.player.sprite, map.walls);
-    this.cameras.main.startFollow(this.player.sprite, true, 0.12, 0.12);
-    this.cameras.main.setZoom(1);
+    this.cameras.main.startFollow(this.player.sprite, true, 0.14, 0.14);
+    refreshCoinHud();
+    resetDwell();
+    setDwellRing(false, 0);
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.player?.destroy();
+    });
 
     this.add
-      .text(W / 2, H - 28, "Walk into a zone · Board the ship for career planets", {
+      .text(this.W / 2, this.H - 16, "Walk into a building · step on the pad to launch", {
         fontFamily: "monospace",
         fontSize: "11px",
         color: "#9bb0d0",
+        backgroundColor: "#070b16aa",
+        padding: { x: 8, y: 4 },
       })
       .setOrigin(0.5)
       .setDepth(20)
-      .setAlpha(0.85);
+      .setScrollFactor(0)
+      .setAlpha(0.95);
   }
 
   update(_t: number, dt: number): void {
+    if (this.transitioning) return;
     this.player.update(dt);
     if (isUiBlocking()) {
       setPrompt(null);
@@ -57,68 +90,54 @@ export class HubScene extends Phaser.Scene {
 
     const px = this.player.sprite.x;
     const py = this.player.sprite.y;
-    this.near = null;
 
-    for (const h of this.hotspots) {
-      if (Phaser.Math.Distance.Between(px, py, h.x, h.y) < h.r) {
-        this.near = { type: "hot", id: h.id, label: h.label };
-        break;
-      }
-    }
-
-    if (!this.near) {
-      for (const d of this.doors) {
-        if (
-          px > d.rect.x &&
-          px < d.rect.x + d.rect.w &&
-          py > d.rect.y &&
-          py < d.rect.y + d.rect.h
-        ) {
-          this.near = { type: "door", id: d.target, label: `Enter ${d.label}` };
-          break;
-        }
-      }
-    }
-
-    if (this.near) {
-      // Doors: walk in to enter. Ship: require interact.
-      if (this.near.type === "door") {
-        setPrompt(`${this.near.label}…`);
-        this.activate(this.near);
-      } else {
-        setPrompt(`${this.near.label}  ·  E / A`);
-        if (consumeInteractPress()) this.activate(this.near);
-      }
-    } else {
+    const onPad =
+      Phaser.Math.Distance.Between(px, py, this.pad.x, this.pad.y) < this.pad.r;
+    if (onPad && this.time.now >= this.boardGraceUntil) {
       setPrompt(null);
-    }
-  }
-
-  private transitioning = false;
-
-  private activate(target: { type: "door" | "hot"; id: string }): void {
-    if (this.transitioning || isUiBlocking()) return;
-    this.transitioning = true;
-    if (target.type === "hot" && target.id === "board-ship") {
-      this.registry.set("hubSpawn", {
-        x: this.player.sprite.x,
-        y: this.player.sprite.y + 40,
-      });
-      this.cameras.main.fadeOut(300, 0, 0, 0);
-      this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("Ascent");
-      });
+      this.goAscent();
       return;
     }
-    if (target.type === "door") {
-      this.registry.set("hubSpawn", {
-        x: this.player.sprite.x,
-        y: this.player.sprite.y,
-      });
-      this.cameras.main.fadeOut(250, 0, 0, 0);
-      this.cameras.main.once("camerafadeoutcomplete", () => {
-        this.scene.start("Room", { room: target.id });
-      });
+    if (onPad) {
+      setPrompt(null);
+      return;
     }
+
+    for (const d of this.doors) {
+      if (
+        px > d.rect.x &&
+        px < d.rect.x + d.rect.w &&
+        py > d.rect.y &&
+        py < d.rect.y + d.rect.h
+      ) {
+        setPrompt(null);
+        this.goRoom(d);
+        return;
+      }
+    }
+
+    setPrompt(null);
+  }
+
+  private goAscent(): void {
+    if (this.transitioning) return;
+    this.transitioning = true;
+    this.registry.set("returnFrom", "ascent");
+    this.cameras.main.fadeOut(280, 0, 0, 0);
+    this.cameras.main.once("camerafadeoutcomplete", () => {
+      clearMovementInput();
+      this.scene.start("Ascent");
+    });
+  }
+
+  private goRoom(d: DoorDef): void {
+    if (this.transitioning) return;
+    this.transitioning = true;
+    this.registry.set("returnFrom", d.target);
+    this.cameras.main.fadeOut(220, 0, 0, 0);
+    this.cameras.main.once("camerafadeoutcomplete", () => {
+      clearMovementInput();
+      this.scene.start("Room", { room: d.target });
+    });
   }
 }

@@ -30,18 +30,23 @@ body {
 
 #app {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
 }
 
 #game-container {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
 }
 
 #game-container canvas {
-  display: block;
-  margin: 0 auto;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
@@ -56,6 +61,7 @@ body {
   align-items: flex-start;
   pointer-events: none;
   z-index: 5;
+  gap: 10px;
 }
 
 #zone-label {
@@ -67,6 +73,96 @@ body {
   font-size: 13px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+#hud-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#coin-hud {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(7, 11, 22, 0.8);
+  border: 1px solid #c9a227;
+  border-radius: 999px;
+  padding: 6px 12px 6px 8px;
+  color: #ffd54a;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#coin-hud.complete {
+  border-color: #5cc8ff;
+  box-shadow: 0 0 12px rgba(92, 200, 255, 0.35);
+}
+
+#coin-icon {
+  image-rendering: pixelated;
+  width: 22px;
+  height: 22px;
+}
+
+#dwell-ring {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  margin-top: -52px;
+  z-index: 7;
+  pointer-events: none;
+  transform: translate(0, 0);
+}
+
+#dwell-ring.hidden {
+  display: none !important;
+}
+
+#dwell-ring svg {
+  display: block;
+  transform: rotate(-90deg);
+}
+
+.dwell-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.15);
+  stroke-width: 4;
+}
+
+.dwell-ring-fill {
+  fill: none;
+  stroke: #ffd54a;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 113;
+  stroke-dashoffset: 113;
+  transition: stroke-dashoffset 0.05s linear;
+}
+
+#coin-toast {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  z-index: 15;
+  background: rgba(18, 28, 48, 0.95);
+  border: 1px solid #ffd54a;
+  color: #ffd54a;
+  font-family: monospace;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+}
+
+#coin-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 #help-btn {
@@ -101,8 +197,128 @@ body {
 #prompt.hidden,
 #panel.hidden,
 #help-overlay.hidden,
-#mobile-controls.hidden {
+#mobile-controls.hidden,
+#aside-card.hidden {
   display: none !important;
+}
+
+#aside-card {
+  position: absolute;
+  top: 56px;
+  right: 14px;
+  width: min(340px, calc(100vw - 28px));
+  max-height: min(70vh, 560px);
+  overflow: auto;
+  z-index: 8;
+  pointer-events: auto;
+  background: rgba(12, 18, 34, 0.94);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+}
+
+#aside-media {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+#aside-media:not(.has-video) {
+  align-items: center;
+}
+
+#aside-media .aside-img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+/* Project / photo previews — larger, natural photos */
+#aside-media .aside-img[src*="/projects/"] {
+  width: 100%;
+  height: auto;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  image-rendering: auto;
+  border: 1px solid #2c3f66;
+}
+
+#aside-media.has-video .aside-video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid #2c3f66;
+}
+
+#aside-media.has-video .aside-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.aside-video-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+#aside-title {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+#aside-meta {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+#aside-body {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+#aside-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+#aside-links a {
+  font-size: 0.78rem;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: #1c2a48;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+@media (max-width: 700px) {
+  #aside-card {
+    top: auto;
+    bottom: 170px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-height: 28vh;
+  }
 }
 
 #panel {
@@ -282,18 +498,6 @@ body {
   display: flex;
   gap: 6px;
   align-items: center;
-}
-
-#btn-a {
-  width: 72px !important;
-  height: 72px !important;
-  border-radius: 50% !important;
-  background: rgba(255, 159, 67, 0.9) !important;
-  border-color: #ffc98a !important;
-  color: #1a1005 !important;
-  font-weight: 800;
-  font-size: 22px !important;
-  margin-bottom: 8px;
 }
 
 @media (min-width: 900px) and (pointer: fine) {

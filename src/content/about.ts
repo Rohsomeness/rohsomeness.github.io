@@ -2,16 +2,16 @@ import type { AboutContent } from "./types";
 
 export const about: AboutContent = {
   title: "My Story",
-  blurb: "Computer scientist, musician, forever student.",
-  body: `My technical journey started in high school with robotics — electronics, mechanics, and programming that pulled me toward smarter, more autonomous systems.
+  blurb: "ML for rockets · Applied NLP at GT · Musician",
+  body: `I work on ML for rockets at SpaceX (Los Angeles area). I also teach Applied NLP at Georgia Tech.
 
-I studied Computer Science at Georgia Tech, TA'd Machine Learning (CS 7641/4641), and keep building at the intersection of AI and devices.
+My technical journey started in high school with robotics — electronics, mechanics, and programming that pulled me toward smarter, more autonomous systems. Computer Science at Georgia Tech, internships at John Deere and Meta, ML teaching, and then rocketry.
 
 Music has been a parallel track since elementary school: violin for years, piano, vocals, and production. Western classical, eastern classical, R&B, jazz, pop — I steal from all of it.
 
 Outside of code and music: soccer and basically any racquet sport.
 
-Today I work at SpaceX. This little world is a tour of the projects, songs, and chapters that got me here.`,
+This little world is a tour of the projects, songs, and chapters that got me here.`,
   links: [
     { label: "LinkedIn", url: "https://www.linkedin.com/in/roh-das/" },
     { label: "GitHub", url: "https://github.com/Rohsomeness" },

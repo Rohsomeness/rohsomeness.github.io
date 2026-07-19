@@ -7,8 +7,10 @@ export const music: MusicTrack[] = [
     dates: "July 29, 2021",
     summary:
       "John Deere's Got Talent 2021 first-place song about the virtual intern experience during COVID — and a little window into how a song comes together. Singer: Rohit Das.",
+    youtubeId: "EO9PpK4nZIY",
+    youtubeStart: 204,
     links: [
-      { label: "Watch", url: "https://youtu.be/EO9PpK4nZIY?t=204" },
+      { label: "Open on YouTube", url: "https://youtu.be/EO9PpK4nZIY?t=204" },
     ],
   },
   {
@@ -17,9 +19,10 @@ export const music: MusicTrack[] = [
     dates: "October 14, 2020",
     summary:
       "Blending Indian and Western classical worlds. Sitar: Swati Das. Piano & violin: Rohit Das. Music is universal — this was the proof.",
+    youtubeId: "RjXHfoB8Ieg",
     links: [
       {
-        label: "Watch",
+        label: "Open on YouTube",
         url: "https://www.youtube.com/watch?v=RjXHfoB8Ieg",
       },
     ],
@@ -30,8 +33,10 @@ export const music: MusicTrack[] = [
     dates: "June 15, 2019",
     summary:
       "Senior farewell piano recital mashup of Billie Jean, Bad, and Smooth Criminal.",
+    youtubeId: "fN1ojtmBCY0",
+    youtubeStart: 50,
     links: [
-      { label: "Watch", url: "https://youtu.be/fN1ojtmBCY0?t=50" },
+      { label: "Open on YouTube", url: "https://youtu.be/fN1ojtmBCY0?t=50" },
     ],
   },
   {
@@ -40,9 +45,10 @@ export const music: MusicTrack[] = [
     dates: "October 23, 2018",
     summary:
       "Finale of the farewell concert for Purbasha Youth Band. Vocals: Rohit Das.",
+    youtubeId: "dqfIalxvKuk",
     links: [
       {
-        label: "Watch",
+        label: "Open on YouTube",
         url: "https://www.youtube.com/watch?v=dqfIalxvKuk",
       },
     ],
@@ -53,6 +59,10 @@ export const music: MusicTrack[] = [
     dates: "January 21, 2018",
     summary:
       "Solo vocals: All of Me (John Legend) and Ain't No Sunshine (Bill Withers).",
+    youtubeId: "SVPNe9NmaBY",
+    youtubeExtra: [
+      { id: "bh9woQVqc3s", label: "Ain't No Sunshine" },
+    ],
     links: [
       {
         label: "All of Me",

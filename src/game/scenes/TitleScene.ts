@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { openHelp } from "../ui/dom";
 
 export class TitleScene extends Phaser.Scene {
   constructor() {
@@ -11,11 +10,16 @@ export class TitleScene extends Phaser.Scene {
 
     this.add.rectangle(width / 2, height / 2, width, height, 0x070b16);
 
-    // stars
     for (let i = 0; i < 80; i++) {
       const x = Math.random() * width;
       const y = Math.random() * height;
-      const s = this.add.circle(x, y, Math.random() > 0.8 ? 1.6 : 1, 0xffffff, 0.5 + Math.random() * 0.5);
+      const s = this.add.circle(
+        x,
+        y,
+        Math.random() > 0.8 ? 1.6 : 1,
+        0xffffff,
+        0.5 + Math.random() * 0.5,
+      );
       this.tweens.add({
         targets: s,
         alpha: 0.15,
@@ -25,20 +29,20 @@ export class TitleScene extends Phaser.Scene {
       });
     }
 
-    if (this.textures.exists("ship")) {
-      this.add.image(width / 2, height * 0.38, "ship").setDisplaySize(160, 110);
+    if (this.textures.exists("ship_up")) {
+      this.add.image(width / 2, height * 0.36, "ship_up").setDisplaySize(48, 110);
     }
 
     this.add
-      .text(width / 2, height * 0.58, "ROHIT DAS", {
+      .text(width / 2, height * 0.55, "ROHIT DAS", {
         fontFamily: "monospace",
-        fontSize: "36px",
+        fontSize: Math.min(40, width * 0.06) + "px",
         color: "#e8eefc",
       })
       .setOrigin(0.5);
 
     this.add
-      .text(width / 2, height * 0.58 + 36, "Computer scientist · Musician · Explorer", {
+      .text(width / 2, height * 0.55 + 36, "Computer scientist · Musician · Explorer", {
         fontFamily: "system-ui, sans-serif",
         fontSize: "14px",
         color: "#9bb0d0",
@@ -46,7 +50,7 @@ export class TitleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const cta = this.add
-      .text(width / 2, height * 0.72, "Press any key / tap to start", {
+      .text(width / 2, height * 0.7, "Press any key / tap to start", {
         fontFamily: "monospace",
         fontSize: "14px",
         color: "#5cc8ff",
@@ -64,7 +68,7 @@ export class TitleScene extends Phaser.Scene {
     const start = () => {
       this.input.keyboard?.off("keydown", start);
       this.input.off("pointerdown", start);
-      openHelp();
+      // No confirmation modal — go straight in
       this.scene.start("Hub");
     };
 

@@ -8,6 +8,7 @@ export const projects: Project[] = [
     summary:
       "Automatic smart-home-style Nerf system that detects, targets, and fires using computer vision and facial recognition — with friend lists so it won't blast pretrained faces. OpenCV on a Raspberry Pi 3B, Arduino Uno, servo/motor, laser-cut wood, and a Nerf Phoenix.",
     tags: ["OpenCV", "Raspberry Pi", "Arduino", "CV"],
+    imageSrc: "/assets/projects/autonerf.jpg",
     links: [
       { label: "Video", url: "https://youtu.be/9rLi6Xelfl4" },
       { label: "Code", url: "https://github.com/Rohsomeness/AutoNerf" },
@@ -20,6 +21,7 @@ export const projects: Project[] = [
     summary:
       "Deep multimodal classifier for hateful vs non-hateful memes. Combined image + caption signals with CLIP and beat prior baselines on the challenge setup.",
     tags: ["CLIP", "Multimodal", "ML"],
+    imageSrc: "/assets/projects/hateful.jpg",
     links: [
       {
         label: "Paper",
@@ -35,6 +37,7 @@ export const projects: Project[] = [
     summary:
       "Customizable Windows voice assistant: reminders via text, brightness, news, weather, Wikipedia, app launch, search — plus Pokémon battle-mode easter eggs and on-screen bubble/mystify effects.",
     tags: ["Python", "Voice", "Desktop"],
+    imageSrc: "/assets/projects/apollo.jpg",
     links: [
       {
         label: "Code",
@@ -49,6 +52,7 @@ export const projects: Project[] = [
     summary:
       "Realtime chat with rooms, instant messaging, and a Send My Location feature. Node.js, Express, and MongoDB.",
     tags: ["Node.js", "Express", "MongoDB"],
+    imageSrc: "/assets/projects/chat.jpg",
     links: [
       { label: "Code", url: "https://github.com/Rohsomeness/node-weather-website" },
     ],
@@ -60,6 +64,7 @@ export const projects: Project[] = [
     summary:
       "Address or city → geolocation + forecast. Node.js/Express backend wired to weather and geolocation APIs.",
     tags: ["Node.js", "APIs"],
+    imageSrc: "/assets/projects/weather.jpg",
     links: [
       { label: "Code", url: "https://github.com/Rohsomeness/node-weather-website" },
     ],
@@ -71,6 +76,7 @@ export const projects: Project[] = [
     summary:
       "Cuisine classifier over complex recipe data — preprocessing-heavy ML with a side quest into how food trade shaped cultural overlap.",
     tags: ["ML", "NLP", "Classification"],
+    imageSrc: "/assets/projects/cooking.jpg",
     links: [
       {
         label: "Colab",
@@ -85,6 +91,7 @@ export const projects: Project[] = [
     summary:
       "Immunofluorescence Microscopy Result Analyzer — clustering models to help interpret lab microscopy results at the University of South Carolina Environmental Health and Disease Laboratory.",
     tags: ["Research", "Clustering"],
+    imageSrc: "/assets/projects/ifmra.jpg",
     links: [],
   },
 ];
