@@ -232,22 +232,22 @@ export class PlayerController {
         angle = -35;
       }
     } else if (this.propKey === "prop_macbook") {
-      // Closed laptop tucked under arm / at side
-      scale = 1.15;
+      // Closed laptop — smaller, at the hip/side
+      scale = 0.72;
       if (this.facing === "side") {
-        ox = this.flipX ? -13 : 13;
-        oy = 10 + bob;
-        angle = this.flipX ? 8 : -8;
+        ox = this.flipX ? -11 : 11;
+        oy = 14 + bob;
+        angle = this.flipX ? 6 : -6;
         flip = this.flipX;
       } else if (this.facing === "back") {
-        ox = 11;
-        oy = 8 + bob;
-        angle = 5;
+        ox = 10;
+        oy = 12 + bob;
+        angle = 4;
         depth = 9;
       } else {
-        ox = 13;
-        oy = 12 + bob;
-        angle = -12;
+        ox = 12;
+        oy = 16 + bob;
+        angle = -10;
       }
     }
 

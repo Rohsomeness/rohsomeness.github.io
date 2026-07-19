@@ -310,15 +310,25 @@ body {
   text-decoration: none;
 }
 
-@media (max-width: 700px) {
-  /* Mobile: pin modal to top so it doesn't cover the character / D-pad */
+/* Phones & touch devices: force info modal to the very top of the screen */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
   #aside-card {
-    top: 56px;
-    bottom: auto;
-    right: 10px;
-    left: 10px;
-    width: auto;
-    max-height: min(36vh, 320px);
+    position: fixed !important;
+    top: max(4px, env(safe-area-inset-top, 0px)) !important;
+    bottom: auto !important;
+    left: 6px !important;
+    right: 6px !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: min(32vh, 260px);
+    z-index: 50;
+    border-radius: 12px;
+    margin: 0 !important;
+  }
+
+  /* Keep HUD above the modal so coins/? stay tappable */
+  #hud {
+    z-index: 55;
   }
 }
 
